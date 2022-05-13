@@ -5,14 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.MediaPlayer
-import android.os.*
+import android.os.Binder
+import android.os.Build
+import android.os.IBinder
+import android.os.PowerManager
+import android.text.TextUtils
 import android.util.Log
 import com.example.daemon.dev.AbsWorkService
 import com.example.daemon.receiver.AlarmReceiver
 import com.example.daemon.utils.FileUtils
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AlarmService : AbsWorkService() {
 
@@ -20,22 +22,18 @@ class AlarmService : AbsWorkService() {
         const val EXTRA_NAME = "startForegroundService"
         //
         private const val TAG = "AlarmService"
-        private const val WHAT_NOTIFICATION = 1
-        private const val DELAY_NOTIFICATION = 10000L
+        private const val PHONE_VIVO = "vivo"
         private var sIsRunning = false
     }
 
     private var mPlayer: MediaPlayer? = null
     private val mBinder: MainBinder = MainBinder()
-    private lateinit var mHandler: AlarmHandler
     private lateinit var mReceiver: AlarmReceiver
 
     override fun onCreate() {
         super.onCreate()
         Log.i(TAG, "onCreate")
         FileUtils.writeFileToSDCard(this, assets.open("di.ogg"))
-        // handler
-        this.mHandler = AlarmHandler(Looper.getMainLooper())
         // receiver
         val receiver = AlarmReceiver()
         val filter = IntentFilter()
@@ -105,6 +103,10 @@ class AlarmService : AbsWorkService() {
         }
         mPlayer?.let {
             it.reset()
+            val brand = Build.BRAND
+            if (TextUtils.equals(PHONE_VIVO, brand)) {
+                it.isLooping = true
+            }
             it.setDataSource(FileUtils.getPath(this))
             it.setOnPreparedListener { player ->
                 player.start()
@@ -128,26 +130,6 @@ class AlarmService : AbsWorkService() {
 
     inner class MainBinder : Binder() {
         fun refresh() {}
-    }
-
-    inner class AlarmHandler(looper: Looper) : Handler(looper) {
-
-        init {
-            sendHandler(delayMillis = 0)
-        }
-
-        private fun sendHandler(delayMillis: Long = DELAY_NOTIFICATION) {
-            val msg = Message.obtain()
-            msg.what = WHAT_NOTIFICATION
-            sendMessageDelayed(msg, delayMillis)
-        }
-
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            startPlayer()
-            //
-            sendHandler()
-        }
     }
 
 }
