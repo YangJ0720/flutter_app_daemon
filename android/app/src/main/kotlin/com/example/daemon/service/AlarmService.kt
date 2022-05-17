@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.MediaPlayer
 import android.os.*
-import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.daemon.R
@@ -23,11 +22,11 @@ import java.io.IOException
 class AlarmService : AbsWorkService() {
 
     companion object {
+        //
         const val EXTRA_NAME = "startForegroundService"
         //
         private const val TAG = "AlarmService"
         private const val CHANNEL_ID = "channel_id"
-//        private const val PHONE_VIVO = "vivo"
         private const val WHAT_NOTIFICATION = 1
         private const val DELAY_NOTIFICATION = 30000L
         private var sIsRunning = false
@@ -148,10 +147,6 @@ class AlarmService : AbsWorkService() {
         }
         mPlayer?.let {
             it.reset()
-//            val brand = Build.BRAND
-//            if (TextUtils.equals(PHONE_VIVO, brand)) {
-//                it.isLooping = true
-//            }
             it.setDataSource(FileUtils.getPath(this))
             it.setOnPreparedListener { player ->
                 player.start()
