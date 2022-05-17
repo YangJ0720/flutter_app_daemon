@@ -1,4 +1,4 @@
-package com.example.daemon
+package com.example.daemon.ui
 
 import android.content.ComponentName
 import android.content.Context
@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
-import android.util.Log
 import com.example.daemon.service.AlarmService
 import io.flutter.embedding.android.FlutterActivity
 

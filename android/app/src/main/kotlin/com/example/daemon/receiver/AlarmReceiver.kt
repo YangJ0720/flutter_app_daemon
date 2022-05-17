@@ -9,13 +9,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.example.daemon.MainActivity
+import com.example.daemon.ui.MainActivity
 import com.example.daemon.R
 import com.example.daemon.service.AlarmService
+import com.example.daemon.watcher.RefWatcher
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,10 +36,14 @@ class AlarmReceiver : BroadcastReceiver() {
             }
             Intent.ACTION_SCREEN_ON -> {
                 startForegroundService(context, false)
+                // 屏幕开启，关闭透明Activity
+                RefWatcher.finishKeepLiveActivity()
                 Log.i(TAG, "屏幕点亮")
             }
             Intent.ACTION_SCREEN_OFF -> {
                 startForegroundService(context, true)
+                // 屏幕关闭，打开透明Activity
+                RefWatcher.startKeepLiveActivity(context)
                 Log.i(TAG, "屏幕熄灭")
             }
             else -> {}
